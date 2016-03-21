@@ -1,0 +1,23 @@
+<ion-tabs class="tabs-color-active-balanced"
+          ng-class="{'tabs-icon-top': !platform.android, 'tabs-icon-left': platform.android}">
+    <ion-tab title="Chats"
+             icon-off="{{platform.android ? 'ion-android-chat' : 'ion-ios-chatboxes-outline'}}"
+             icon-on="{{platform.android ? 'ion-android-chat' : 'ion-ios-chatboxes'}}"
+             href="#/chats">
+        <ion-nav-view name="tab-chats"></ion-nav-view>
+    </ion-tab>
+
+    <ion-tab title="Contacts"
+             icon-off="{{platform.android ? 'ion-android-people' : 'ion-ios-people-outline'}}"
+             icon-on="{{platform.android ? 'ion-android-people' : 'ion-ios-people'}}"
+             href="#/contacts">
+        <ion-nav-view name="tab-contacts"></ion-nav-view>
+    </ion-tab>
+
+    <ion-tab title="Configuration"
+             icon-off="{{platform.android ? 'ion-gear-b' : 'ion-ios-gear-outline'}}"
+             icon-on="{{platform.android ? 'ion-gear-b' : 'ion-ios-gear'}}"
+             href="#/configs">
+        <ion-nav-view name="tab-configs"></ion-nav-view>
+    </ion-tab>
+</ion-tabs>

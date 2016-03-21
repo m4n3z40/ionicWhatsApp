@@ -1,18 +1,31 @@
 angular.module('ionWhatsApp.controllers', [])
 
-.controller('ChatsCtrl', function($scope) {
-    // With the new view caching in Ionic, Controllers are only called
-    // when they are recreated or on app start, instead of every page change.
-    // To listen for when this page is active (for example, to refresh data),
-    // listen for the $ionicView.enter event:
-    //
-    //$scope.$on('$ionicView.enter', function(e) {
-    //});
+.controller('ChatsCtrl', function($scope, $ionicLoading, wsConversations) {
+    $scope.chats = [];
 
+    $ionicLoading.show({template: 'Loading...'});
+
+    wsConversations
+        .getAllSummariesFromUser(1)
+        .then(function(chats) {
+            $scope.chats = chats;
+
+            $ionicLoading.hide();
+        });
 })
 
-.controller('ContactsCtrl', function($scope) {
+.controller('ContactsCtrl', function($scope, $ionicLoading, wsContacts) {
+    $scope.contacts = [];
 
+    $ionicLoading.show({template: 'Loading...'});
+
+    wsContacts
+        .getAllFromUser(1)
+        .then(function(contacts) {
+            $scope.contacts = contacts;
+
+            $ionicLoading.hide();
+        });
 })
 
 .controller('ConfigsCtrl', function($scope) {

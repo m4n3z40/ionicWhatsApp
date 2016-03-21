@@ -14,5 +14,23 @@
         </button>
     </ion-nav-buttons>
     <ion-content>
+        <h4 ng-if="chats.length === 0">You have not started a conversation yet :(</h4>
+        <ion-list ng-if="chats.length > 0">
+            <ion-item ng-repeat="chat in chats" class="item-avatar" href="#/chats/{{chat.id}}">
+                <img ng-src="{{chat.picture}}" alt="{{chat.displayName}}">
+                <span class="item-note">{{chat.lastMessage.sentAt}}</span>
+                <h2>{{chat.displayName}}</h2>
+                <p>
+                    <i class="ion-ios-checkmark-empty"
+                       ng-class="{positive: chat.lastMessage.seen}">
+                    </i>
+                    <i class="ion-ios-checkmark-empty"
+                       ng-if="chat.lastMessage.received"
+                       ng-class="{positive: chat.lastMessage.seen}">
+                    </i>
+                    {{chat.lastMessage.text}}
+                </p>
+            </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>

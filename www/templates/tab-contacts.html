@@ -14,5 +14,14 @@
         </button>
     </ion-nav-buttons>
     <ion-content>
+        <h4 ng-if="contacts.length === 0">You have no contacts added yet :(</h4>
+        <ion-list ng-if="contacts.length > 0">
+            <ion-item ng-repeat="contact in contacts" class="item-avatar">
+                <img ng-src="{{contact.avatar}}" alt="{{contact.displayName}}">
+                <h2>{{contact.displayName}}</h2>
+                <span class="item-note">online {{contact.lastOnlineAt}}</span>
+                <p>{{contact.statusMessage}}</p>
+            </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>

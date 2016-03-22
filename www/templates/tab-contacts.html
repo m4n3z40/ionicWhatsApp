@@ -1,12 +1,12 @@
 <ion-view view-title="Contacts">
     <ion-nav-buttons side="secondary">
-        <button class="button button-icon"
+        <button class="button button-icon button-balanced"
                 ng-class="{
-                        'ion-ios-search': !platform.android,
-                        'ion-android-search': platform.android
-                    }">
+                    'ion-ios-search': !platform.android,
+                    'ion-android-search': platform.android
+                }">
         </button>
-        <button class="button button-icon"
+        <button class="button button-icon button-balanced"
                 ng-class="{
                     'ion-ios-personadd': !platform.android,
                     'ion-android-person-add': platform.android
@@ -16,7 +16,7 @@
     <ion-content>
         <h4 ng-if="contacts.length === 0">You have no contacts added yet :(</h4>
         <ion-list ng-if="contacts.length > 0">
-            <ion-item ng-repeat="contact in contacts" class="item-avatar">
+            <ion-item ng-repeat="contact in contacts" class="item-avatar" ng-click="beginConversation(contact)">
                 <img ng-src="{{contact.avatar}}" alt="{{contact.displayName}}">
                 <h2>{{contact.displayName}}</h2>
                 <span class="item-note">online {{contact.lastOnlineAt}}</span>

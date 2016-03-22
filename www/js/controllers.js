@@ -26,6 +26,10 @@ angular.module('ionWhatsApp.controllers', [])
 
             $ionicLoading.hide();
         });
+
+    $scope.beginConversation = function (contact) {
+        console.log('Begin conversation with contact: ', contact);
+    };
 })
 
 .controller('ConfigsCtrl', function($scope) {

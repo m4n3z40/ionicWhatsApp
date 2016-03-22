@@ -1,17 +1,17 @@
 <ion-view view-title="ionicWhatsApp">
     <ion-nav-buttons side="secondary">
-        <button class="button button-icon"
+        <button class="button button-icon button-balanced"
                 ng-class="{
-                            'ion-ios-search': !platform.android,
-                            'ion-android-search': platform.android
-                        }">
+                    'ion-ios-search': !platform.android,
+                    'ion-android-search': platform.android
+                }">
         </button>
-        <button class="button button-icon"
+        <button class="button button-icon button-balanced"
                 ng-class="{
-                        'ion-ios-plus-empty': !platform.android,
-                        'ion-android-add': platform.android
-                    }">
-        </button>
+                    'ion-ios-plus-empty': !platform.android,
+                    'ion-android-add': platform.android
+                }">
+        </button >
     </ion-nav-buttons>
     <ion-content>
         <h4 ng-if="chats.length === 0">You have not started a conversation yet :(</h4>

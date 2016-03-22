@@ -53,7 +53,9 @@ angular.module('ionWhatsApp.services', [])
         remove: function (contactId) {
             var deferred = $q.defer();
 
-            contacts = contacts.filter(function(contact) { return contact.id !== contactId });
+            contacts = contacts.filter(function(contact) {
+                return contact.id !== contactId
+            });
             deferred.resolve();
 
             return deferred.promise;

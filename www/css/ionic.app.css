@@ -9730,3 +9730,12 @@ a.button {
   opacity: 0;
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
+
+.ws-messages__item p {
+  white-space: normal; }
+
+.ws-messages__item.current-user .item-note {
+  float: left; }
+
+.ws-messages__item.current-user h2 {
+  text-align: right; }

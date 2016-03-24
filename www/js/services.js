@@ -109,7 +109,7 @@ angular.module('ionWhatsApp.services', [])
                     sentAt: '5 min ago'
                 },
                 {
-                    from: 3,
+                    from: 1,
                     text: 'Great! it`s been some time since we last talked, huh?',
                     received: true,
                     seen: false,
@@ -153,7 +153,7 @@ angular.module('ionWhatsApp.services', [])
                     sentAt: '5 min ago'
                 },
                 {
-                    from: 3,
+                    from: 1,
                     text: 'Great! it`s been some time since we last talked, huh?',
                     received: true,
                     seen: false,
@@ -162,7 +162,7 @@ angular.module('ionWhatsApp.services', [])
             ]
         },
         {
-            id: 2,
+            id: 3,
             participants: [
                 {
                     id: 1,
@@ -197,7 +197,7 @@ angular.module('ionWhatsApp.services', [])
                     sentAt: '5 min ago'
                 },
                 {
-                    from: 3,
+                    from: 1,
                     text: 'Great! it`s been some time since we last talked, huh?',
                     received: true,
                     seen: false,
@@ -207,20 +207,22 @@ angular.module('ionWhatsApp.services', [])
         }
     ];
 
+    function _getDisplayName(conversation, currentUserId) {
+        return conversation.displayName ?
+            conversation.displayName :
+            conversation.participants.filter(function(user) {
+                return user.id !== currentUserId;
+            })[0].displayName;
+    }
+
     return {
         getAllSummariesFromUser: function (userId) {
             var deferred = $q.defer();
             var summaries = conversations.map(function (conversation) {
-                var displayName = conversation.displayName ?
-                        conversation.displayName :
-                        conversation.participants.filter(function(user) {
-                            return user.id !== userId;
-                        })[0].displayName;
-
                 return {
-                    id: 2,
+                    id: conversation.id,
                     picture: 'http://placehold.it/60x60',
-                    displayName: displayName,
+                    displayName: _getDisplayName(conversation, userId),
                     lastMessage: conversation.messages[conversation.messages.length - 1]
                 };
             });
@@ -229,17 +231,40 @@ angular.module('ionWhatsApp.services', [])
 
             return deferred.promise;
         },
-        getOne: function (conversationId, options) {
+        getOne: function (userId, conversationId, options) {
             var deferred = $q.defer();
             var conversation = conversations.filter(function(conversation) {
                 return conversation.id === conversationId;
             })[0];
 
-            deferred.resolve(conversation);
+            if (conversation) {
+                conversation = angular.copy(conversation);
+
+                conversation.displayName = _getDisplayName(conversation, userId);
+                conversation.messages = conversation.messages.map(function(message) {
+                    var from = conversation.participants[0].id === message.from ?
+                        conversation.participants[0] :
+                        conversation.participants[1];
+
+                    return {
+                        from: from,
+                        fromCurrentUser: (from.id === userId),
+                        text: message.text,
+                        received: message.received,
+                        seen: message.seen,
+                        sentAt: message.sentAt
+                    };
+                });
+
+
+                deferred.resolve(conversation);
+            } else {
+                deferred.reject(new Error('Conversation not found.'));
+            }
 
             return deferred.promise;
         },
-        remove: function (conversationId) {
+        remove: function (userId, conversationId) {
             var deferred = $q.defer();
 
             conversations = conversations.filter(function(conversation) {

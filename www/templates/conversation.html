@@ -1,0 +1,43 @@
+<ion-view>
+    <ion-nav-title>{{conversation.displayName}}</ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button class="button button-icon button-balanced"
+                ng-class="{
+                            'ion-ios-search': !platform.android,
+                            'ion-android-search': platform.android
+                        }">
+        </button>
+    </ion-nav-buttons>
+    <ion-content>
+        <ion-list class="ws-messages">
+            <ion-item ng-repeat="message in conversation.messages"
+                      class="ws-messages__item"
+                      ng-class="{'current-user': message.fromCurrentUser}">
+                <span class="item-note">
+                    {{message.sentAt}}
+                    <i class="ion-ios-checkmark-empty"
+                       ng-class="{positive: message.seen}">
+                    </i>
+                    <i class="ion-ios-checkmark-empty"
+                       ng-if="message.received"
+                       ng-class="{positive: message.seen}">
+                    </i>
+                </span>
+                <h2>{{message.fromCurrentUser ? 'Me' : message.from.displayName}}</h2>
+                <p>{{message.text}}</p>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+    <ion-footer-bar class="ws-messages-input item-input-inset">
+        <label class="item-input-wrapper">
+            <input type="text" placeholder="Type here..." ng-model="newMessage.text">
+        </label>
+        <button class="button button-balanced"
+                ng-class="{
+                        'ion-ios-paperplane': !platform.android,
+                        'ion-android-send': platform.android
+                    }"
+                ng-click="sendMessage()">
+        </button>
+    </ion-footer-bar>
+</ion-view>

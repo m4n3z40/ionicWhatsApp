@@ -21,3 +21,21 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 
+// Todo: Extract this to a better place
+.ws-messages {
+    &__item {
+        p {
+            white-space: normal;
+        }
+
+        &.current-user {
+            .item-note {
+                float: left;
+            }
+
+            h2 {
+                text-align: right;
+            }
+        }
+    }
+}

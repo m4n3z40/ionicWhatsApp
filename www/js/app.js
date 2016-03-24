@@ -9,7 +9,8 @@ angular.module('ionWhatsApp', ['ionic', 'ionWhatsApp.services', 'ionWhatsApp.con
     $stateProvider
         .state('app', {
             abstract: true,
-            templateUrl: 'templates/app.html'
+            templateUrl: 'templates/app.html',
+            controller: 'AppCtrl'
         })
 
         .state('app.chats', {
@@ -21,6 +22,16 @@ angular.module('ionWhatsApp', ['ionic', 'ionWhatsApp.services', 'ionWhatsApp.con
                 }
             }
         })
+        .state('app.chats_conversation', {
+            url: '/chats/:id',
+            views: {
+                'tab-chats': {
+                    templateUrl: 'templates/conversation.html',
+                    controller: 'ConversationCtrl'
+                }
+            }
+        })
+
         .state('app.contacts', {
             url: '/contacts',
             views: {
@@ -30,6 +41,7 @@ angular.module('ionWhatsApp', ['ionic', 'ionWhatsApp.services', 'ionWhatsApp.con
                 }
             }
         })
+
         .state('app.configs', {
             url: '/configs',
             views: {

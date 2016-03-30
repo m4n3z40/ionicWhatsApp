@@ -1,0 +1,36 @@
+{
+  "name": "firebase-token-generator",
+  "version": "2.0.0",
+  "homepage": "https://firebase.com",
+  "authors": [
+    "Firebase <operations@firebase.com>"
+  ],
+  "description": "Firebase Token Generator for JavaScript",
+  "main": "./dist/firebase-token-generator.js",
+  "keywords": [
+    "Firebase",
+    "synchronization",
+    "real-time",
+    "websocket",
+    "authentication"
+  ],
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "js",
+    "lib"
+  ],
+  "_release": "2.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.0.0",
+    "commit": "2c209c9c019387493d4c4ec5b32c64b0bf9063de"
+  },
+  "_source": "git://github.com/firebase/firebase-token-generator-node.git",
+  "_target": "^2.0.0",
+  "_originalSource": "firebase-token-generator",
+  "_direct": true
+}

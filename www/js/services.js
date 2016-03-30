@@ -1,5 +1,50 @@
 angular.module('ionWhatsApp.services', [])
 
+.factory('wsUser', function(WS_FIREBASE_CFG, $firebaseAuth) {
+    var tokenGenerator = new FirebaseTokenGenerator(WS_FIREBASE_CFG.secret);
+    var auth = $firebaseAuth(WS_FIREBASE_CFG.baseRef);
+
+    return {
+        signIn: function (cel, password) {
+            var token = tokenGenerator.createToken({
+                uid: CryptoJS.SHA256(cel).toString(),
+                cel: cel,
+                password: CryptoJS.SHA256(password).toString()
+            });
+
+            return auth
+                .$authWithCustomToken(token)
+                .then(function(authData) {
+                    return authData.auth;
+                });
+        },
+        onChange: function(fn) {
+            return auth.$onAuth(function (authData) {
+                if (authData) {
+                    fn(authData.auth);
+                } else {
+                    fn(null);
+                }
+            });
+        },
+        logout: function () {
+            return auth.$unauth();
+        },
+        currentUser: function () {
+            var authData = auth.$getAuth();
+
+            if (authData && authData.auth) {
+                return authData.auth;
+            }
+
+            return null;
+        },
+        isLoggedIn: function () {
+            return this.currentUser() !== null;
+        }
+    }
+})
+
 .factory('wsContacts', function($q) {
     var contacts = [
         {

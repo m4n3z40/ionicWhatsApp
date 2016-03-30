@@ -9737,5 +9737,5 @@ a.button {
 .ws-messages__item.current-user .item-note {
   float: left; }
 
-.ws-messages__item.current-user h2 {
+.ws-messages__item.current-user h2, .ws-messages__item.current-user p {
   text-align: right; }

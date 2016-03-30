@@ -9,7 +9,7 @@
     </ion-nav-buttons>
     <ion-content>
         <ion-list>
-            <ion-item ng-if="!isLoggedIn()" ng-click="showSignInModal()">
+            <ion-item ng-if="!isLoggedIn()" ng-click="goToLogin()">
                 <i class="ion-log-in"></i> Sign In
             </ion-item>
             <ion-item ng-if="isLoggedIn()" ng-click="logout()">

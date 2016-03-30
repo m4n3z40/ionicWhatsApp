@@ -1,0 +1,31 @@
+<ion-view>
+    <ion-nav-title>Sign In</ion-nav-title>
+    <ion-nav-buttons side="secondary">
+        <button class="button button-balanced button-icon"
+                ng-class="{
+                    'ion-ios-close-empty': !platform.android,
+                    'ion-android-close': platform.android
+                }"
+                ng-click="close()">
+        </button>
+    </ion-nav-buttons>
+    <ion-content>
+        <form ng-submit="submit()">
+            <ion-list>
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">Cel. Number</span>
+                    <input type="tel" ng-model="celNumber" placeholder="+xx xx xxxxxxxxx">
+                </label>
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">Password</span>
+                    <input type="password" ng-model="password">
+                </label>
+                <ion-item>
+                    <button type="submit" class="button button-block button-balanced">
+                        Sign In
+                    </button>
+                </ion-item>
+            </ion-list>
+        </form>
+    </ion-content>
+</ion-view>

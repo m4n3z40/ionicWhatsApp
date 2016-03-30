@@ -12,6 +12,14 @@ angular.module('ionWhatsApp', [
 ])
 
 .config(function($stateProvider, $urlRouterProvider) {
+    function resolveAuth () {
+        return {
+            currentAuth: function (wsUser) {
+                return wsUser.getAuth().$requireAuth();
+            }
+        };
+    }
+
     $stateProvider
         .state('app', {
             abstract: true,
@@ -26,7 +34,8 @@ angular.module('ionWhatsApp', [
                     templateUrl: 'templates/tab-chats.html',
                     controller: 'ChatsCtrl'
                 }
-            }
+            },
+            resolve: resolveAuth()
         })
         .state('app.chats_conversation', {
             url: '/chats/:id',
@@ -35,7 +44,8 @@ angular.module('ionWhatsApp', [
                     templateUrl: 'templates/conversation.html',
                     controller: 'ConversationCtrl'
                 }
-            }
+            },
+            resolve: resolveAuth()
         })
 
         .state('app.contacts', {
@@ -45,7 +55,8 @@ angular.module('ionWhatsApp', [
                     templateUrl: 'templates/tab-contacts.html',
                     controller: 'ContactsCtrl'
                 }
-            }
+            },
+            resolve: resolveAuth()
         })
 
         .state('app.configs', {
@@ -56,12 +67,22 @@ angular.module('ionWhatsApp', [
                     controller: 'ConfigsCtrl'
                 }
             }
+        })
+
+        .state('app.configs_sign_in', {
+            url: '/configs/sign-in',
+            views: {
+                'tab-configs': {
+                    templateUrl: 'templates/sign-in.html',
+                    controller: 'SignInCtrl'
+                }
+            }
         });
 
-    $urlRouterProvider.otherwise('/chats');
+    $urlRouterProvider.otherwise('/configs');
 })
 
-.run(function ($ionicPlatform, $rootScope) {
+.run(function ($ionicPlatform, $rootScope, $state) {
     var currentPlatform = ionic.Platform.platform();
 
     // Make platform helper globally accessible
@@ -70,6 +91,10 @@ angular.module('ionWhatsApp', [
         ios: currentPlatform === 'ios',
         android: currentPlatform === 'android'
     };
+
+    $rootScope.$on('$stateChangeError', function() {
+        $state.go("app.configs_sign_in", null, {reload: true});
+    });
 
     $ionicPlatform.ready(function () {
         if (window.cordova && window.cordova.plugins.Keyboard) {

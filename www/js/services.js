@@ -5,6 +5,9 @@ angular.module('ionWhatsApp.services', [])
     var auth = $firebaseAuth(WS_FIREBASE_CFG.baseRef);
 
     return {
+        getAuth: function() {
+            return auth;
+        },
         signIn: function (cel, password) {
             var token = tokenGenerator.createToken({
                 uid: CryptoJS.SHA256(cel).toString(),

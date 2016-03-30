@@ -1,6 +1,6 @@
 angular.module('ionWhatsApp.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $ionicLoading, wsUser) {
+.controller('AppCtrl', function($scope, $ionicModal, $ionicLoading, wsUser, $state, $ionicHistory) {
     $scope.currentUser = null;
 
     $scope.showLoader = function() {
@@ -11,28 +11,14 @@ angular.module('ionWhatsApp.controllers', [])
         $ionicLoading.hide();
     };
 
-    $scope.signIn = {
-        modal: null,
-        celNumber: '',
-        password: '',
-        submit: function() {
-            $scope.showLoader();
-
-            wsUser.signIn(this.celNumber, this.password);
-        }
-    };
-
-    $ionicModal
-        .fromTemplateUrl('templates/modals/sign-in.html', {scope: $scope})
-        .then(function (modal) {
-            $scope.signIn.modal = modal;
-        });
-
     var removeOnUserChange = wsUser.onChange(function(user) {
         $scope.currentUser = user;
-
         $scope.hideLoader();
-        $scope.signIn.modal.hide();
+
+        if (user) {
+            $ionicHistory.clearHistory();
+            $state.go('app.chats', null, {reload: true});
+        }
     });
 
     $scope.$on('$destroy', function() {
@@ -46,7 +32,7 @@ angular.module('ionWhatsApp.controllers', [])
     $scope.showLoader();
 
     wsConversations
-        .getAllSummariesFromUser($scope.currentUser.id)
+        .getAllSummariesFromUser(1)
         .then(function(chats) {
             $scope.chats = chats;
 
@@ -65,7 +51,7 @@ angular.module('ionWhatsApp.controllers', [])
     $scope.showLoader();
 
     wsConversations
-        .getOne($scope.currentUser.id, Number($stateParams.id))
+        .getOne(1, Number($stateParams.id))
         .then(function(conversation) {
             $scope.conversation = conversation;
 
@@ -91,9 +77,9 @@ angular.module('ionWhatsApp.controllers', [])
     };
 })
 
-.controller('ConfigsCtrl', function($scope, wsUser) {
-    $scope.showSignInModal = function() {
-        $scope.signIn.modal.show();
+.controller('ConfigsCtrl', function($scope, $state, wsUser) {
+    $scope.goToLogin = function() {
+        $state.go('app.configs_sign_in');
     };
 
     $scope.logout = function() {
@@ -103,4 +89,24 @@ angular.module('ionWhatsApp.controllers', [])
     $scope.isLoggedIn = function() {
         return wsUser.isLoggedIn();
     }
+})
+
+.controller('SignInCtrl', function($scope, $state, wsUser, $ionicHistory) {
+    $scope.celNumber = '';
+    $scope.password = '';
+    $scope.submit = function() {
+        $scope.showLoader();
+
+        wsUser
+            .signIn($scope.celNumber, $scope.password)
+            .then(function() {
+                $scope.celNumber = '';
+                $scope.password = '';
+            });
+    };
+
+    $scope.close = function() {
+        $ionicHistory.clearHistory();
+        $state.go('app.configs');
+    };
 });

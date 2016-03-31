@@ -92,16 +92,19 @@ angular.module('ionWhatsApp.controllers', [])
 })
 
 .controller('SignInCtrl', function($scope, $state, wsUser, $ionicHistory) {
-    $scope.celNumber = '';
-    $scope.password = '';
+    $scope.signInData = {
+        celNumber: '',
+        password: ''
+    };
+
     $scope.submit = function() {
         $scope.showLoader();
 
         wsUser
-            .signIn($scope.celNumber, $scope.password)
+            .signIn($scope.signInData.celNumber, $scope.signInData.password)
             .then(function() {
-                $scope.celNumber = '';
-                $scope.password = '';
+                $scope.signInData.celNumber = '';
+                $scope.signInData.password = '';
             });
     };
 

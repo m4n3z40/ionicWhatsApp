@@ -1,22 +1,44 @@
 angular.module('ionWhatsApp.services', [])
 
-.factory('wsUser', function(WS_FIREBASE_CFG, $firebaseAuth) {
+.factory('wsUser', function(WS_FIREBASE_CFG, $firebaseAuth, $firebaseObject) {
     var tokenGenerator = new FirebaseTokenGenerator(WS_FIREBASE_CFG.secret);
-    var auth = $firebaseAuth(WS_FIREBASE_CFG.baseRef);
+    var fbRef = WS_FIREBASE_CFG.baseRef;
+    var auth = $firebaseAuth(fbRef);
+
+    function getUser(uid) {
+        return $firebaseObject(fbRef.child('users').child(uid));
+    }
+
+    function createUser(userSync, userData) {
+        userSync.uid = userData.uid;
+        userSync.cel = userData.cel;
+        userSync.password = userData.password;
+
+        return userSync.$save();
+    }
 
     return {
         getAuth: function() {
             return auth;
         },
         signIn: function (cel, password) {
-            var token = tokenGenerator.createToken({
+            var userData = {
                 uid: CryptoJS.SHA256(cel).toString(),
                 cel: cel,
                 password: CryptoJS.SHA256(password).toString()
-            });
+            };
 
-            return auth
-                .$authWithCustomToken(token)
+            return getUser(userData.uid).$loaded()
+                .then(function (user) {
+                    if (!user.uid) {
+                        createUser(user, userData)
+                    }
+                })
+                .then(function () {
+                    var token = tokenGenerator.createToken(userData);
+
+                    return auth.$authWithCustomToken(token);
+                })
                 .then(function(authData) {
                     return authData.auth;
                 });
@@ -34,16 +56,16 @@ angular.module('ionWhatsApp.services', [])
             return auth.$unauth();
         },
         currentUser: function () {
-            var authData = auth.$getAuth();
-
-            if (authData && authData.auth) {
-                return authData.auth;
+            if (this.isLoggedIn()) {
+                return getUser(auth.$getAuth().auth.uid);
             }
 
             return null;
         },
         isLoggedIn: function () {
-            return this.currentUser() !== null;
+            var authData = auth.$getAuth();
+
+            return authData && authData.auth;
         }
     }
 })

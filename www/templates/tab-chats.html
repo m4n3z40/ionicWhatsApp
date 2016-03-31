@@ -16,7 +16,7 @@
     <ion-content>
         <h4 ng-if="chats.length === 0">You have not started a conversation yet :(</h4>
         <ion-list ng-if="chats.length > 0">
-            <ion-item ng-repeat="chat in chats" class="item-avatar" href="#/chats/{{chat.id}}">
+            <ion-item ng-repeat="chat in chats" class="item-avatar" href="#/chats/{{chat.$id}}">
                 <img ng-src="{{chat.picture}}" alt="{{chat.displayName}}">
                 <span class="item-note">{{chat.lastMessage.sentAt}}</span>
                 <h2>{{chat.displayName}}</h2>

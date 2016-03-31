@@ -55,7 +55,7 @@ angular.module('ionWhatsApp.services', [])
         logout: function () {
             return auth.$unauth();
         },
-        currentUser: function () {
+        current: function () {
             if (this.isLoggedIn()) {
                 return getUser(auth.$getAuth().auth.uid);
             }
@@ -66,6 +66,9 @@ angular.module('ionWhatsApp.services', [])
             var authData = auth.$getAuth();
 
             return authData && authData.auth;
+        },
+        getOne: function (id) {
+            return getUser(id);
         }
     }
 })
@@ -141,216 +144,22 @@ angular.module('ionWhatsApp.services', [])
     };
 })
 
-.factory('wsConversations', function($q) {
-    var conversations = [
-        {
-            id: 1,
-            participants: [
-                {
-                    id: 1,
-                    avatar: 'http://placehold.it/60x60',
-                    displayName: 'John Doe',
-                    statusMessage: 'I am Batman',
-                    lastOnlineAt: '30 min ago'
-                },
-                {
-                    id: 2,
-                    avatar: 'http://placehold.it/60x60',
-                    displayName: 'Jane Doe',
-                    statusMessage: 'I am Batman',
-                    lastOnlineAt: '30 min ago'
-                }
-            ],
-            picture: 'http://placehold.it/60x60',
-            displayName: '',
-            messages: [
-                {
-                    from: 1,
-                    text: 'Hey, how are you doing?',
-                    received: true,
-                    seen: true,
-                    sentAt: '6 min ago'
-                },
-                {
-                    from: 2,
-                    text: 'Fine, and you?',
-                    received: true,
-                    seen: true,
-                    sentAt: '5 min ago'
-                },
-                {
-                    from: 1,
-                    text: 'Great! it`s been some time since we last talked, huh?',
-                    received: true,
-                    seen: false,
-                    sentAt: '5 min ago'
-                }
-            ]
-        },
-        {
-            id: 2,
-            participants: [
-                {
-                    id: 1,
-                    avatar: 'http://placehold.it/60x60',
-                    displayName: 'John Doe',
-                    statusMessage: 'I am Batman',
-                    lastOnlineAt: '30 min ago'
-                },
-                {
-                    id: 2,
-                    avatar: 'http://placehold.it/60x60',
-                    displayName: 'Jane Doe',
-                    statusMessage: 'I am Batman',
-                    lastOnlineAt: '30 min ago'
-                }
-            ],
-            picture: 'http://placehold.it/60x60',
-            displayName: '',
-            messages: [
-                {
-                    from: 1,
-                    text: 'Hey, how are you doing?',
-                    received: true,
-                    seen: true,
-                    sentAt: '6 min ago'
-                },
-                {
-                    from: 2,
-                    text: 'Fine, and you?',
-                    received: true,
-                    seen: true,
-                    sentAt: '5 min ago'
-                },
-                {
-                    from: 1,
-                    text: 'Great! it`s been some time since we last talked, huh?',
-                    received: true,
-                    seen: false,
-                    sentAt: '5 min ago'
-                }
-            ]
-        },
-        {
-            id: 3,
-            participants: [
-                {
-                    id: 1,
-                    avatar: 'http://placehold.it/60x60',
-                    displayName: 'John Doe',
-                    statusMessage: 'I am Batman',
-                    lastOnlineAt: '30 min ago'
-                },
-                {
-                    id: 2,
-                    avatar: 'http://placehold.it/60x60',
-                    displayName: 'Jane Doe',
-                    statusMessage: 'I am Batman',
-                    lastOnlineAt: '30 min ago'
-                }
-            ],
-            picture: 'http://placehold.it/60x60',
-            displayName: '',
-            messages: [
-                {
-                    from: 1,
-                    text: 'Hey, how are you doing?',
-                    received: true,
-                    seen: true,
-                    sentAt: '6 min ago'
-                },
-                {
-                    from: 2,
-                    text: 'Fine, and you?',
-                    received: true,
-                    seen: true,
-                    sentAt: '5 min ago'
-                },
-                {
-                    from: 1,
-                    text: 'Great! it`s been some time since we last talked, huh?',
-                    received: true,
-                    seen: false,
-                    sentAt: '5 min ago'
-                }
-            ]
-        }
-    ];
-
-    function _getDisplayName(conversation, currentUserId) {
-        return conversation.displayName ?
-            conversation.displayName :
-            conversation.participants.filter(function(user) {
-                return user.id !== currentUserId;
-            })[0].displayName;
-    }
-
+.factory('wsConversations', function($q, WS_FIREBASE_CFG, $firebaseArray, $firebaseObject) {
     return {
         getAllSummariesFromUser: function (userId) {
-            var deferred = $q.defer();
-            var summaries = conversations.map(function (conversation) {
-                return {
-                    id: conversation.id,
-                    picture: 'http://placehold.it/60x60',
-                    displayName: _getDisplayName(conversation, userId),
-                    lastMessage: conversation.messages[conversation.messages.length - 1]
-                };
-            });
-
-            deferred.resolve(summaries);
-
-            return deferred.promise;
+            return $firebaseArray(WS_FIREBASE_CFG.baseRef.child('users').child(userId).child('conversations'));
         },
-        getOne: function (userId, conversationId, options) {
-            var deferred = $q.defer();
-            var conversation = conversations.filter(function(conversation) {
-                return conversation.id === conversationId;
-            })[0];
-
-            if (conversation) {
-                conversation = angular.copy(conversation);
-
-                conversation.displayName = _getDisplayName(conversation, userId);
-                conversation.messages = conversation.messages.map(function(message) {
-                    var from = conversation.participants[0].id === message.from ?
-                        conversation.participants[0] :
-                        conversation.participants[1];
-
-                    return {
-                        from: from,
-                        fromCurrentUser: (from.id === userId),
-                        text: message.text,
-                        received: message.received,
-                        seen: message.seen,
-                        sentAt: message.sentAt
-                    };
-                });
-
-
-                deferred.resolve(conversation);
-            } else {
-                deferred.reject(new Error('Conversation not found.'));
-            }
-
-            return deferred.promise;
+        getOne: function (conversationId) {
+            return $firebaseObject(WS_FIREBASE_CFG.baseRef.child('conversations').child(conversationId));
         },
-        remove: function (userId, conversationId) {
-            var deferred = $q.defer();
-
-            conversations = conversations.filter(function(conversation) {
-                return conversation.id !== conversationId;
-            });
-            deferred.resolve();
-
-            return deferred.promise;
+        getMessages: function (conversationSync) {
+            return $firebaseArray(conversationSync.$ref().child('messages'));
         },
-        add: function (userId, conversationData) {
-            var deferred = $q.defer();
-
-            conversations.push(conversationData);
-            deferred.resolve();
-
-            return deferred.promise;
+        remove: function (messagesSync, message) {
+            return messagesSync.$remove(message);
+        },
+        add: function (messagesSync, conversationData) {
+            return messagesSync.$add(conversationData);
         }
     };
 });

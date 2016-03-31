@@ -13,7 +13,6 @@ angular.module('ionWhatsApp.controllers', [])
 
     var removeOnUserChange = wsUser.onChange(function(user) {
         $scope.currentUser = user;
-        $scope.hideLoader();
 
         if (user) {
             $ionicHistory.clearHistory();
@@ -26,13 +25,16 @@ angular.module('ionWhatsApp.controllers', [])
     });
 })
 
-.controller('ChatsCtrl', function($scope, wsConversations) {
+.controller('ChatsCtrl', function($scope, wsUser, wsConversations) {
     $scope.chats = [];
 
     $scope.showLoader();
 
-    wsConversations
-        .getAllSummariesFromUser(1)
+    wsUser.current()
+        .$loaded()
+        .then(function(user) {
+            return wsConversations.getAllSummariesFromUser(user.uid);
+        })
         .then(function(chats) {
             $scope.chats = chats;
 
@@ -40,20 +42,59 @@ angular.module('ionWhatsApp.controllers', [])
         });
 })
 
-.controller('ConversationCtrl', function($scope, wsConversations, $stateParams) {
+.controller('ConversationCtrl', function($scope, wsConversations, $stateParams, wsUser) {
     $scope.conversation = null;
+    $scope.messages = null;
     $scope.newMessage = {};
+    $scope.otherUser = null;
 
     $scope.sendMessage = function() {
-        console.log($scope.newMessage.text);
+        wsConversations.add($scope.messages, {
+            from: $scope.currentUser.uid,
+            text: $scope.newMessage.text,
+            received: false,
+            seen: false,
+            sentAt: '5 min ago'
+        });
+
+        $scope.newMessage = {};
     };
+
+    function handleMessagesChange(change) {
+        if (change.event === 'child_added') {
+            var lastAdded = $scope.messages[$scope.messages.length - 1];
+
+            if (lastAdded.from !== $scope.currentUser.uid) {
+                lastAdded.received = true;
+                lastAdded.seen = true;
+
+                $scope.messages.$save(lastAdded);
+            }
+        }
+    }
 
     $scope.showLoader();
 
-    wsConversations
-        .getOne(1, Number($stateParams.id))
+    wsConversations.getOne($stateParams.id)
+        .$loaded()
         .then(function(conversation) {
+            var participants = conversation.participants;
+            var otherUserId = participants.user1 === $scope.currentUser.uid ?
+                participants.user1 :
+                participants.user2;
+
             $scope.conversation = conversation;
+
+            return wsUser.getOne(otherUserId);
+        })
+        .then(function(otherUser) {
+            $scope.otherUser = otherUser;
+
+            return wsConversations.getMessages($scope.conversation);
+        })
+        .then(function(messages) {
+            messages.$watch(handleMessagesChange);
+            $scope.messages = messages;
 
             $scope.hideLoader();
         });
@@ -105,6 +146,8 @@ angular.module('ionWhatsApp.controllers', [])
             .then(function() {
                 $scope.signInData.celNumber = '';
                 $scope.signInData.password = '';
+
+                $scope.hideLoader();
             });
     };
 

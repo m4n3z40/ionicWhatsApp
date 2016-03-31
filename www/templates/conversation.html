@@ -10,9 +10,9 @@
     </ion-nav-buttons>
     <ion-content>
         <ion-list class="ws-messages">
-            <ion-item ng-repeat="message in conversation.messages"
+            <ion-item ng-repeat="message in messages"
                       class="ws-messages__item"
-                      ng-class="{'current-user': message.fromCurrentUser}">
+                      ng-class="{'current-user': message.from === currentUser.uid}">
                 <span class="item-note">
                     {{message.sentAt}}
                     <i class="ion-ios-checkmark-empty"
@@ -23,7 +23,7 @@
                        ng-class="{positive: message.seen}">
                     </i>
                 </span>
-                <h2>{{message.fromCurrentUser ? 'Me' : message.from.displayName}}</h2>
+                <h2>{{message.from === currentUser.uid ? 'Me' : otherUser.cel}}</h2>
                 <p>{{message.text}}</p>
             </ion-item>
         </ion-list>

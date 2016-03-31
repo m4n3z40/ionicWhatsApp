@@ -1,0 +1,53 @@
+{
+    "conversations" : {
+        "cbaf51d54b15737d1165b436b3516d5fe5b42e59d29974054b1618a9c7828e40" : {
+            "displayName" : "",
+            "messages" : {
+                "0" : {
+                    "from" : "b2a48b3be7a999c6a52ecee9c113983f1c84ba8706a400fccd853e1002ff1914",
+                    "received" : false,
+                    "seen" : false,
+                    "sentAt" : "6 min ago",
+                    "text" : "Hey, how are you doing?"
+                },
+                "1" : {
+                    "from" : "b2a48b3be7a999c6a52ecee9c113983f1c84ba8706a400fccd853e1002ff1914",
+                    "received" : false,
+                    "seen" : false,
+                    "sentAt" : "1 min ago",
+                    "text" : "Hello"
+                }
+            },
+            "participants" : {
+                "user1" : "b2a48b3be7a999c6a52ecee9c113983f1c84ba8706a400fccd853e1002ff1914",
+                "user2" : "cf027529b7fd96f0f3cdabd2e1b8a6442667609a04801b8e29da0cca30b24c00"
+            },
+            "picture" : "http://placehold.it/60x60"
+        }
+    },
+    "users" : {
+        "b2a48b3be7a999c6a52ecee9c113983f1c84ba8706a400fccd853e1002ff1914" : {
+            "cel" : "+55 21 999951234",
+            "password" : "50b6eea9382c8b49ca74d46903b01efeac6f8a802d36560f7ce9f6ef681b76f1",
+            "uid" : "b2a48b3be7a999c6a52ecee9c113983f1c84ba8706a400fccd853e1002ff1914"
+        },
+        "cf027529b7fd96f0f3cdabd2e1b8a6442667609a04801b8e29da0cca30b24c00" : {
+            "cel" : "+55 21 970391705",
+            "conversations" : {
+                "cbaf51d54b15737d1165b436b3516d5fe5b42e59d29974054b1618a9c7828e40" : {
+                    "displayName" : "Jane Doe",
+                    "lastMessage" : {
+                        "from" : "b2a48b3be7a999c6a52ecee9c113983f1c84ba8706a400fccd853e1002ff1914",
+                        "received" : true,
+                        "seen" : false,
+                        "sentAt" : "5 mins ago",
+                        "text" : "Hey, how are you doing?"
+                    },
+                    "picture" : "http://placehold.it/60x60"
+                }
+            },
+            "password" : "50b6eea9382c8b49ca74d46903b01efeac6f8a802d36560f7ce9f6ef681b76f1",
+            "uid" : "cf027529b7fd96f0f3cdabd2e1b8a6442667609a04801b8e29da0cca30b24c00"
+        }
+    }
+}

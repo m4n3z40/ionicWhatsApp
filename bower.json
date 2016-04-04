@@ -5,7 +5,8 @@
     "ionic": "driftyco/ionic-bower#1.2.4",
     "angularfire": "^1.2.0",
     "firebase-token-generator": "^2.0.0",
-    "crypto-js": "^3.1.6"
+    "crypto-js": "^3.1.6",
+    "ngCordova": "^0.1.24-alpha"
   },
   "dependencies": {}
 }

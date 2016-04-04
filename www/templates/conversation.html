@@ -1,13 +1,5 @@
 <ion-view>
     <ion-nav-title>{{conversation.displayName}}</ion-nav-title>
-    <ion-nav-buttons side="secondary">
-        <button class="button button-icon button-balanced"
-                ng-class="{
-                            'ion-ios-search': !platform.android,
-                            'ion-android-search': platform.android
-                        }">
-        </button>
-    </ion-nav-buttons>
     <ion-content>
         <ion-list class="ws-messages">
             <ion-item ng-repeat="message in messages"

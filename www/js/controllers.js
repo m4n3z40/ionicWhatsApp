@@ -100,7 +100,7 @@ angular.module('ionWhatsApp.controllers', [])
         });
 })
 
-.controller('ContactsCtrl', function($scope, wsContacts, $state) {
+.controller('ContactsCtrl', function($scope, wsContacts, $cordovaContacts) {
     $scope.contacts = [];
 
     $scope.showLoader();
@@ -118,6 +118,21 @@ angular.module('ionWhatsApp.controllers', [])
 
         wsContacts.refreshAllFromUser($scope.currentUser.uid)
             .then(function () {
+                $scope.hideLoader();
+            });
+    };
+
+    $scope.addNewContact = function() {
+        $cordovaContacts.pickContact()
+            .then(function(contact) {
+                $scope.showLoader();
+
+                return wsContacts.add($scope.contacts, contact);
+            })
+            .catch(function(error) {
+                window.alert(error.message);
+            })
+            .finally(function() {
                 $scope.hideLoader();
             });
     };

@@ -103,9 +103,9 @@ angular.module('ionWhatsApp.services', [])
             });
 
             deferred.resolve(foundUsers);
-
-            return deferred.promise;
         });
+
+        return deferred.promise;
     }
 
     function syncUserContacts(userId) {
@@ -157,7 +157,26 @@ angular.module('ionWhatsApp.services', [])
             return contactsSync.$remove(contact);
         },
         add: function (contactsSync, contact) {
-            return contactsSync.$add(contact);
+            var contactArr = [contact];
+
+            contactArr = removeInvalidContacts(contactArr);
+
+            if (contactArr.length === 0) {
+                return $q.reject(new Error('Contact not valid.'));
+            }
+
+            return findMatchingUsers(assumeContactsUID(contactArr))
+                .then(function(foundMatches) {
+                    if (foundMatches.length === 0) {
+                        return $q.reject(new Error('Contact is not registered in IonicWhatsApp.'));
+                    }
+
+                    return foundMatches;
+                })
+                .then(syncUserContacts(contactsSync.$ref().key()))
+                .then(function(contactsSaved) {
+                    return contactsSaved[0];
+                });
         }
     };
 })

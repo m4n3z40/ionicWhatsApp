@@ -73,73 +73,91 @@ angular.module('ionWhatsApp.services', [])
     }
 })
 
-.factory('wsContacts', function($q) {
-    var contacts = [
-        {
-            id: 1,
-            avatar: 'http://placehold.it/60x60',
-            displayName: 'John Doe',
-            statusMessage: 'I am Batman',
-            lastOnlineAt: '30 min ago'
-        },
-        {
-            id: 2,
-            avatar: 'http://placehold.it/60x60',
-            displayName: 'John Doe',
-            statusMessage: 'I am Batman',
-            lastOnlineAt: '30 min ago'
-        },
-        {
-            id: 3,
-            avatar: 'http://placehold.it/60x60',
-            displayName: 'John Doe',
-            statusMessage: 'I am Batman',
-            lastOnlineAt: '30 min ago'
-        },
-        {
-            id: 4,
-            avatar: 'http://placehold.it/60x60',
-            displayName: 'John Doe',
-            statusMessage: 'I am Batman',
-            lastOnlineAt: '30 min ago'
+.factory('wsContacts', function($q, $cordovaContacts, WS_FIREBASE_CFG, $firebaseArray, $firebaseObject) {
+    function removeInvalidContacts(contacts) {
+        return contacts.filter(function(contact) {
+            return contact.phoneNumbers && contact.phoneNumbers.length > 0;
+        });
+    }
+
+    function assumeContactsUID(contacts) {
+        contacts.forEach(function(contact) {
+            contact.assumedUID = CryptoJS.SHA256(contact.phoneNumbers[0].value);
+        });
+
+        return contacts;
+    }
+
+    function findMatchingUsers(contacts) {
+        var deferred = $q.defer();
+
+        WS_FIREBASE_CFG.baseRef.child('users').once('value', function(snapshot) {
+            var usersHash = snapshot.val();
+
+            var foundUsers = contacts.filter(function(contact) {
+                return contact.assumedUID in usersHash;
+            }).map(function(contact) {
+                contact.dbData = usersHash[contact.assumedUID];
+
+                return contact;
+            });
+
+            deferred.resolve(foundUsers);
+
+            return deferred.promise;
+        });
+    }
+
+    function syncUserContacts(userId) {
+        return function (contacts) {
+            if (!contacts || contacts.length === 0) return;
+
+            return $q.all(contacts.map(function (contact) {
+                var deferred = $q.defer();
+
+                WS_FIREBASE_CFG.baseRef
+                    .child('contacts')
+                    .child(userId)
+                    .child(contact.assumedUID)
+                    .set({
+                        uid: contact.assumedUID,
+                        avatar: 'http://placehold.it/60x60',
+                        displayName: contact.displayName,
+                        statusMessage: 'Hi. I`m on IonicWhatsApp!',
+                        lastOnlineAt: '10 min ago'
+                    }, function () {
+                        deferred.resolve(contact);
+                    });
+
+                return deferred.promise;
+            }));
         }
-    ];
+    }
 
     return {
         getAllFromUser: function (userId) {
-            var deferred = $q.defer();
-
-            deferred.resolve(contacts);
-
-            return deferred.promise;
+            return $firebaseArray(WS_FIREBASE_CFG.baseRef.child('contacts').child(userId));
         },
-        getOne: function (contactId) {
-            var deferred = $q.defer();
-            var contact = contacts.filter(function(contact) {
-                return contact.is === contactId;
-            })[0];
-
-            deferred.resolve(contact);
-
-            return deferred.promise;
+        refreshAllFromUser: function(userId) {
+            return $cordovaContacts.find({hasPhoneNumber: true})
+                .then(removeInvalidContacts)
+                .then(assumeContactsUID)
+                .then(findMatchingUsers)
+                .then(syncUserContacts(userId));
         },
-        remove: function (contactId) {
-            var deferred = $q.defer();
-
-            contacts = contacts.filter(function(contact) {
-                return contact.id !== contactId
-            });
-            deferred.resolve();
-
-            return deferred.promise;
+        getOne: function (userId, contactId) {
+            return $firebaseObject(
+                WS_FIREBASE_CFG.baseRef
+                    .child('contacts')
+                    .child(userId)
+                    .child(contactId)
+            );
         },
-        add: function (userId, contactData) {
-            var deferred = $q.defer();
-
-            contacts.push(contactData);
-            deferred.resolve();
-
-            return deferred.promise;
+        remove: function (contactsSync, contact) {
+            return contactsSync.$remove(contact);
+        },
+        add: function (contactsSync, contact) {
+            return contactsSync.$add(contact);
         }
     };
 })

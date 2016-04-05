@@ -100,21 +100,30 @@ angular.module('ionWhatsApp.controllers', [])
         });
 })
 
-.controller('ContactsCtrl', function($scope, wsContacts) {
+.controller('ContactsCtrl', function($scope, wsContacts, $state) {
     $scope.contacts = [];
 
     $scope.showLoader();
 
-    wsContacts
-        .getAllFromUser(1)
+    wsContacts.getAllFromUser($scope.currentUser.uid)
+        .$loaded()
         .then(function(contacts) {
             $scope.contacts = contacts;
 
             $scope.hideLoader();
         });
 
+    $scope.refreshContacts = function() {
+        $scope.showLoader();
+
+        wsContacts.refreshAllFromUser($scope.currentUser.uid)
+            .then(function () {
+                $scope.hideLoader();
+            });
+    };
+
     $scope.beginConversation = function (contact) {
-        console.log('Begin conversation with contact: ', contact);
+        console.log(contact);
     };
 })
 

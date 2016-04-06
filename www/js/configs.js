@@ -8,4 +8,12 @@ angular.module('ionWhatsApp.configs', [])
         baseUrl: baseUrl,
         baseRef: new Firebase(baseUrl)
     };
-}()));
+}()))
+
+.factory('APP_CONFIGS', function(wsBindingUtils) {
+    return {
+        get: function() {
+            return wsBindingUtils.getLocalStorageBindingState('appConfigs');
+        }
+    };
+});

@@ -142,7 +142,9 @@ angular.module('ionWhatsApp.controllers', [])
     };
 })
 
-.controller('ConfigsCtrl', function($scope, $state, wsUser) {
+.controller('ConfigsCtrl', function($scope, $state, wsUser, wsBindingUtils) {
+    wsBindingUtils.bindToLocalStorage($scope, 'appConfigs');
+
     $scope.goToLogin = function() {
         $state.go('app.configs_sign_in');
     };

@@ -8,6 +8,7 @@ angular.module('ionWhatsApp', [
     'ionic',
     'firebase',
     'ionWhatsApp.configs',
+    'ionWhatsApp.utils',
     'ionWhatsApp.services',
     'ionWhatsApp.controllers'
 ])

@@ -1,6 +1,23 @@
 <ion-view view-title="Configuration">
     <ion-content>
         <ion-list>
+            <ion-item class="item-divider">App Configs</ion-item>
+
+            <ion-toggle ng-model="appConfigs.contactsBackupEnabled"
+                        toggle-class="toggle-balanced">
+                Local Contacts Backup
+            </ion-toggle>
+            <ion-toggle ng-model="appConfigs.conversationsBackupEnabled"
+                        toggle-class="toggle-balanced">
+                Local Conversations Backup
+            </ion-toggle>
+            <ion-toggle ng-model="appConfigs.messagesBackupEnabled"
+                        toggle-class="toggle-balanced">
+                Local Messages Backup
+            </ion-toggle>
+
+            <ion-item class="item-divider">User Configs</ion-item>
+
             <ion-item ng-if="!isLoggedIn()" ng-click="goToLogin()">
                 <i class="ion-log-in"></i> Sign In
             </ion-item>

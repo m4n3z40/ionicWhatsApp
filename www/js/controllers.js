@@ -118,6 +118,8 @@ angular.module('ionWhatsApp.controllers', [])
 
             $scope.hideLoader();
         });
+
+    // TODO: Add messages backup and keep only last 50 messages for each conversation on firebase
 })
 
 .controller('ContactsCtrl', function($scope, wsContacts, $cordovaContacts) {

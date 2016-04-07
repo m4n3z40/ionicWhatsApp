@@ -1,6 +1,6 @@
 angular.module('ionWhatsApp.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $ionicLoading, wsUser, $state, $ionicHistory) {
+.controller('AppCtrl', function($scope, $ionicLoading, wsUser, $state, $ionicHistory, WS_APP_CFG, wsLocalBackup, wsContacts, wsConversations) {
     $scope.currentUser = null;
 
     $scope.showLoader = function() {
@@ -11,7 +11,7 @@ angular.module('ionWhatsApp.controllers', [])
         $ionicLoading.hide();
     };
 
-    var removeOnUserChange = wsUser.onChange(function(user) {
+    wsUser.onChange(function(user) {
         $scope.currentUser = user;
 
         if (user) {
@@ -20,9 +20,29 @@ angular.module('ionWhatsApp.controllers', [])
         }
     });
 
-    $scope.$on('$destroy', function() {
-        removeOnUserChange();
-    });
+    function doBackupsOnAppClose() {
+        if (!$scope.currentUser) return;
+
+        var appConfig = WS_APP_CFG.get();
+
+        if (appConfig.contactsBackupEnabled) {
+            wsContacts.getAllFromUser($scope.currentUser.uid)
+                .$loaded()
+                .then(wsLocalBackup.backupContacts);
+        }
+
+        if (appConfig.conversationsBackupEnabled) {
+            wsConversations.getAllSummariesFromUser($scope.currentUser.uid)
+                .$loaded()
+                .then(wsLocalBackup.backupConversations);
+        }
+    }
+
+    if (ionic.Platform.isIOS()) {
+        document.addEventListener('resign', doBackupsOnAppClose)
+    } else {
+        document.addEventListener('pause', doBackupsOnAppClose)
+    }
 })
 
 .controller('ChatsCtrl', function($scope, wsUser, wsConversations) {
@@ -135,10 +155,6 @@ angular.module('ionWhatsApp.controllers', [])
             .finally(function() {
                 $scope.hideLoader();
             });
-    };
-
-    $scope.beginConversation = function (contact) {
-        console.log(contact);
     };
 })
 

@@ -55,7 +55,7 @@ angular.module('ionWhatsApp.services', [])
                 .then(function(db) {
                     return $cordovaSQLite.insertCollection(
                         db,
-                        'INSERT INTO contacts SET (id, data) VALUES (?,?)',
+                        'INSERT OR REPLACE INTO contacts (id, data) VALUES (?,?)',
                         contacts.map(function(contact) {
                             return [contact.uid, angular.toJson(contact)];
                         })
@@ -68,7 +68,7 @@ angular.module('ionWhatsApp.services', [])
                 .then(function(db) {
                     return $cordovaSQLite.insertCollection(
                         db,
-                        'INSERT INTO contacts SET (id, data) VALUES (?,?)',
+                        'INSERT OR REPLACE INTO conversations (id, data) VALUES (?,?)',
                         conversations.map(function(conversation) {
                             return [conversation.$id, angular.toJson(conversation)];
                         })
@@ -79,11 +79,13 @@ angular.module('ionWhatsApp.services', [])
             return getDB()
                 .then(prepareBackupTables)
                 .then(function(db) {
-                    db,
-                    'INSERT INTO messages SET (id, conversationId, data) VALUES (?,?,?)',
-                    messages.map(function(message) {
-                        return [message.$id, conversationId, angular.toJson(message)]
-                    });
+                    return $cordovaSQLite.insertCollection(
+                        db,
+                        'INSERT OR REPLACE INTO messages (id, conversationId, data) VALUES (?,?,?)',
+                        messages.map(function(message) {
+                            return [message.$id, conversationId, angular.toJson(message)]
+                        })
+                    );
                 });
         },
         deleteBackups: function() {

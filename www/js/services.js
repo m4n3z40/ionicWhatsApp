@@ -48,6 +48,24 @@ angular.module('ionWhatsApp.services', [])
         return deferred.promise;
     }
 
+    // getDB().then(function(db) {
+    //     $cordovaSQLite.execute(db, 'SELECT * FROM contacts')
+    //         .then(function(results) {
+    //             console.log(results);
+    //         })
+    //         .catch(function(error) {
+    //             console.erro(error.message);
+    //         });
+    //
+    //     $cordovaSQLite.execute(db, 'SELECT * FROM conversations')
+    //         .then(function(results) {
+    //             console.log(results);
+    //         })
+    //         .catch(function(error) {
+    //             console.erro(error.message);
+    //         });
+    // });
+
     return {
         backupContacts: function(contacts) {
             return getDB()

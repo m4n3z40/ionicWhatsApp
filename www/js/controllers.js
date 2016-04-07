@@ -142,7 +142,7 @@ angular.module('ionWhatsApp.controllers', [])
     };
 })
 
-.controller('ConfigsCtrl', function($scope, $state, wsUser, wsBindingUtils) {
+.controller('ConfigsCtrl', function($scope, $state, wsUser, wsBindingUtils, $ionicPopup, wsLocalBackup) {
     wsBindingUtils.bindToLocalStorage($scope, 'appConfigs');
 
     $scope.goToLogin = function() {
@@ -155,7 +155,35 @@ angular.module('ionWhatsApp.controllers', [])
 
     $scope.isLoggedIn = function() {
         return wsUser.isLoggedIn();
-    }
+    };
+
+    $scope.clearBackups = function() {
+        $ionicPopup.confirm({
+            title: 'Are you sure?',
+            template: 'If you clear your backups you will lose all saved conversations you have until now.',
+            okType: 'button-assertive'
+        }).then(function(clear) {
+            if (!clear) return;
+
+            $scope.showLoader();
+
+            return wsLocalBackup.deleteBackups();
+        })
+        .then(function() {
+            $ionicPopup.alert({
+                title: 'Success!',
+                template: 'Backups cleared successfully.'
+            });
+        }, function() {
+            $ionicPopup.alert({
+                title: 'Error!',
+                template: 'No backups found.'
+            });
+        })
+        .finally(function() {
+            $scope.hideLoader();
+        });
+    };
 })
 
 .controller('SignInCtrl', function($scope, $state, wsUser, $ionicHistory) {

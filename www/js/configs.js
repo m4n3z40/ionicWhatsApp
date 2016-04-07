@@ -10,10 +10,16 @@ angular.module('ionWhatsApp.configs', [])
     };
 }()))
 
-.factory('APP_CONFIGS', function(wsBindingUtils) {
+.factory('WS_APP_CFG', function(wsBindingUtils) {
     return {
         get: function() {
             return wsBindingUtils.getLocalStorageBindingState('appConfigs');
         }
     };
+}).
+
+constant('WS_SQLITE_CFG', {
+    name: 'whatsAppIonicBackup.db',
+    androidLockWorkaround: 1,
+    iosDatabaseLocation: 'default'
 });

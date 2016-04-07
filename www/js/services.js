@@ -1,5 +1,97 @@
 angular.module('ionWhatsApp.services', [])
 
+.factory('wsLocalBackup', function($q, $ionicPlatform, $cordovaSQLite, WS_SQLITE_CFG) {
+    function prepareBackupTables(db) {
+        var deferred = $q.defer();
+
+        db.transaction(function(tx) {
+            tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS contacts (' +
+                    'id CHAR(64) PRIMARY KEY, ' +
+                    'data TEXT NOT NULL' +
+                ')'
+            );
+
+            tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS conversations (' +
+                    'id CHAR(64) PRIMARY KEY, ' +
+                    'data TEXT NOT NULL' +
+                ')'
+            );
+
+            tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS messages (' +
+                    'id VARCHAR(64) PRIMARY KEY, ' +
+                    'conversationId CHAR(64) NOT NULL, ' +
+                    'data TEXT NOT NULL, ' +
+                    'FOREIGN KEY(conversationId) REFERENCES conversations(id)' +
+                ')'
+            );
+        }, function(error) {
+            deferred.reject(error);
+        }, function() {
+            deferred.resolve(db);
+        });
+
+        return deferred.promise;
+    }
+
+    function getDB() {
+        var deferred = $q.defer();
+
+        $ionicPlatform.ready(function() {
+            var db = $cordovaSQLite.openDB(WS_SQLITE_CFG);
+
+            deferred.resolve(db);
+        });
+
+        return deferred.promise;
+    }
+
+    return {
+        backupContacts: function(contacts) {
+            return getDB()
+                .then(prepareBackupTables)
+                .then(function(db) {
+                    return $cordovaSQLite.insertCollection(
+                        db,
+                        'INSERT INTO contacts SET (id, data) VALUES (?,?)',
+                        contacts.map(function(contact) {
+                            return [contact.uid, angular.toJson(contact)];
+                        })
+                    );
+                });
+        },
+        backupConversations: function(conversations) {
+            return getDB()
+                .then(prepareBackupTables)
+                .then(function(db) {
+                    return $cordovaSQLite.insertCollection(
+                        db,
+                        'INSERT INTO contacts SET (id, data) VALUES (?,?)',
+                        conversations.map(function(conversation) {
+                            return [conversation.$id, angular.toJson(conversation)];
+                        })
+                    );
+                });
+        },
+        backupMessages: function(conversationId, messages) {
+            return getDB()
+                .then(prepareBackupTables)
+                .then(function(db) {
+                    db,
+                    'INSERT INTO messages SET (id, conversationId, data) VALUES (?,?,?)',
+                    messages.map(function(message) {
+                        return [message.$id, conversationId, angular.toJson(message)]
+                    });
+                });
+        },
+        deleteBackups: function() {
+            return $cordovaSQLite.deleteDB(WS_SQLITE_CFG);
+        }
+    };
+})
+
 .factory('wsUser', function(WS_FIREBASE_CFG, $firebaseAuth, $firebaseObject) {
     var tokenGenerator = new FirebaseTokenGenerator(WS_FIREBASE_CFG.secret);
     var fbRef = WS_FIREBASE_CFG.baseRef;

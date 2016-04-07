@@ -15,6 +15,12 @@
                         toggle-class="toggle-balanced">
                 Local Messages Backup
             </ion-toggle>
+            <ion-item class="item-button-right">
+                Clear Backups
+                <button class="button button-assertive" ng-click="clearBackups()">
+                    <i ng-class="{'ion-ios-trash': platform.ios, 'ion-trash-a': !platform.ios}"></i>
+                </button>
+            </ion-item>
 
             <ion-item class="item-divider">User Configs</ion-item>
 

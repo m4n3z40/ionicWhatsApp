@@ -194,7 +194,9 @@ angular.module('ionWhatsApp.services', [])
 
     function assumeContactsUID(contacts) {
         contacts.forEach(function(contact) {
-            contact.assumedUID = CryptoJS.SHA256(contact.phoneNumbers[0].value);
+            contact.assumedUID = CryptoJS
+                .SHA256(contact.phoneNumbers[0].value)
+                .toString();
         });
 
         return contacts;
